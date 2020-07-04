@@ -2,7 +2,9 @@ drop database if exists crowing_rooster;
 create database crowing_rooster; 
 	
 drop DOMAIN if exists correo cascade;
-create DOMAIN correo as varchar(200) check (value ~ '^\d{8}@(.com)|[a-z]+@(.com)$');
+--create DOMAIN correo as varchar(200) check (value ~ '^\d{8}@(.com)|[a-z]+@(.com)$');
+create DOMAIN correo as varchar(200) 
+check ( value ~ '^[a-zA-Z0-9.!#$%&''*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$' );
 
 drop table if exists USUARIO cascade; 
 create table USUARIO(
