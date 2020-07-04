@@ -13,7 +13,7 @@ create table USUARIO(
 	nombre text not null, 
 	clave text not null, 
 	tipo text not null check (tipo in ('Comprador','Vendedor','Repartidor')),
-	img bytea not null	
+	img text not null	
 ); 
 
 drop table if exists REPARTIDOR cascade ; 
