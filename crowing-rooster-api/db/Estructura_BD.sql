@@ -16,8 +16,7 @@ create table USUARIO(
 
 drop table if exists REPARTIDOR cascade ; 
 create table REPARTIDOR(
-	codigo varchar(10) not null, 
-	telefono int not null
+	codigo varchar(10) not null
 );
 
 drop table if exists COMPRADOR cascade; 
@@ -25,14 +24,12 @@ create table COMPRADOR(
 	codigo varchar(10) not null, 
 	dui varchar(10) not null, 
 	email correo not null, 
-	telefono int not null, 
 	id_empresa int not null
 ); 
 
 drop table if exists VENDEDOR cascade; 
 create table VENDEDOR(
 	codigo varchar(10) not null, 
-	telefono int not null, 
 	email correo not null
 ); 
 
