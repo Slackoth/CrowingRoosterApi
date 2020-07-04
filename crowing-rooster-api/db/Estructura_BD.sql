@@ -16,7 +16,7 @@ create table USUARIO(
 
 drop table if exists REPARTIDOR cascade ; 
 create table REPARTIDOR(
-	codigo varchar(10) not null, ----codigo pk fk a usuario
+	codigo varchar(10) not null, 
 	telefono int not null
 );
 
@@ -55,7 +55,7 @@ create table EMPRESA(
 drop table if exists VENTA cascade;  
 create table VENTA (
 	id_venta varchar(10) not null, 
-	estado text not null check (estado in ('VENTA_EXITOSA','VENTA_PENDIENTE')), 
+	estado text not null check (estado in ('Exitosa','Pendiente')), 
 	vendedor_codigo varchar(10) not null
 ); 
 
@@ -67,17 +67,16 @@ create table METODO_PAGO(
 
 drop table if exists VENTA_EXITOSA cascade;  
 create table VENTA_EXITOSA(
-	id_venta_exitosa varchar(10) not null,------pkfk 
+	id_venta_exitosa varchar(10) not null,
 	fecha_venta date not null, 
 	precio money not null, 
-	metodo_pago int not null ----fk
+	metodo_pago int not null 
 ); 
 
 drop table if exists VENTA_PENDIENTE cascade;  
 create table VENTA_PENDIENTE(
-	id_venta_pendiente varchar(10) not null, ------pkfk VENTA(id_venta)
-	fecha_pedido text not null, 
-	id_venta varchar(10)  not null
+	id_venta_pendiente varchar(10) not null,
+	fecha_pedido text not null
 ); 
  
 drop table if exists CALIDAD cascade; 
@@ -106,38 +105,38 @@ create table BATERIA(
 drop table if exists ORDEN cascade; 
 create table ORDEN(
 	codigo_orden varchar(10) not null, 
-	estado text not null check (estado in ('ORDEN_EXITOSA','ORDEN_PENDIENTE', 'ORDEN_CANCELADA')), 
+	estado text not null check (estado in ('Exitosa','Pendiente', 'Cancelada')), 
 	vendedor_codigo varchar(10) not null, 
 	comprador_codigo varchar(10) not null
 );
 
 drop table if exists ORDEN_EXITOSA cascade;  
 create table ORDEN_EXITOSA (
-	id_Oexitosa varchar(10) not null, ----pffk ORDEN(codigo_orden)
+	id_Oexitosa varchar(10) not null, 
 	fecha_entrega date not null, 
 	hora_entrega varchar(10) not null, 
 	precio_total money not null, 
-	metodo_pago int not null -----fk
+	metodo_pago int not null 
 ); 
 
 drop table if exists ORDEN_CANCELADA cascade;  
 create table ORDEN_CANCELADA(
-	id_Ocancelada varchar(10) not null, ---pkfk orden
+	id_Ocancelada varchar(10) not null, 
 	fecha_cancelada date not null 
 ); 
 
 drop table if exists ORDEN_PENDIENTE cascade; 
 create table ORDEN_PENDIENTE(
-	id_Opendiente varchar(10) not null, --pkfk orden
+	id_Opendiente varchar(10) not null,
 	fecha_pendiente date not null 
 ); 
 
 drop table if exists PEDIDO cascade; 
 create table PEDIDO(
 	numero_pedido int not null, 
-	comprador_codigo varchar(10) not null, 
+	--comprador_codigo varchar(10) not null, 
 	codigo_orden varchar(10) not null, 
-	id_bateria int not null -------fk
+	id_bateria int not null 
 ); 
 
 
@@ -145,7 +144,6 @@ drop table if exists ENTREGA cascade;
 create table ENTREGA (
 	id_entrega int not null, 
 	id_estado int not null
-	-----AÑADIR ESTADO DE ENTREGA FK
 ); 
 
 drop table if exists ESTADO_ENTREGA cascade; 
