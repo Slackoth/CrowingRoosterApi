@@ -12,7 +12,7 @@ create table USUARIO(
 	usuario text not null, 
 	nombre text not null, 
 	clave text not null, 
-	tipo text not null check (tipo in ('USUARIO','VENDEDOR','REPARTIDOR')),
+	tipo text not null check (tipo in ('Comprador','Vendedor','Repartidor')),
 	img bytea not null	
 ); 
 
