@@ -39,7 +39,7 @@ create table VENDEDOR(
 drop table if exists TELEFONO cascade; 
 create table TELEFONO(
 	id_telefono serial not null, 
-	telefono int not null, 
+	telefono varchar(10) not null, 
 	comprador_codigo varchar(10), 
 	vendedor_codigo varchar(10), 
 	repartidor_codigo varchar(10)
@@ -47,7 +47,7 @@ create table TELEFONO(
 
 drop table if exists EMPRESA cascade; 
 create table EMPRESA(
-	id_empresa int  not null, 
+	id_empresa serial  not null, 
 	nombre_empresa text not null
 ); 
 
