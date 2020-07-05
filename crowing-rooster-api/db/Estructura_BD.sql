@@ -241,6 +241,7 @@ alter table ORDEN_PENDIENTE add constraint fk_orden_pendiente foreign key (id_Op
 ---PEDIDO
 alter table PEDIDO add constraint pk_numero_pedido primary key(numero_pedido); 
 alter table PEDIDO add constraint fk_id_bateria foreign key (id_bateria) references BATERIA(id_bateria) on delete cascade on update cascade deferrable; 
+alter table PEDIDO add constraint fk_codigo_orden foreign key (codigo_orden) references ORDEN(codigo_orden) on delete cascade on update cascade deferrable; 
 
 ---ESTADO_ENTREGA
 alter table ESTADO_ENTREGA add constraint pk_estado_entrega primary key(id_estado);
