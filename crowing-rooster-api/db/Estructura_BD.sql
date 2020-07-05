@@ -136,8 +136,9 @@ create table ORDEN_PENDIENTE(
 
 drop table if exists PEDIDO cascade; 
 create table PEDIDO(
-	numero_pedido int not null, 
-	--comprador_codigo varchar(10) not null, 
+	numero_pedido serial, 
+	--comprador_codigo varchar(10) not null,
+	cantidad_bateria int not null,
 	codigo_orden varchar(10) not null, 
 	id_bateria int not null 
 ); 
@@ -245,6 +246,7 @@ alter table ORDEN_PENDIENTE add constraint fk_orden_pendiente foreign key (id_Op
 ---PEDIDO
 alter table PEDIDO add constraint pk_numero_pedido primary key(numero_pedido); 
 alter table PEDIDO add constraint fk_id_bateria foreign key (id_bateria) references BATERIA(id_bateria) on delete cascade on update cascade deferrable; 
+alter table PEDIDO add constraint fk_codigo_orden foreign key (codigo_orden) references ORDEN(codigo_orden) on delete cascade on update cascade deferrable; 
 
 ---ESTADO_ENTREGA
 alter table ESTADO_ENTREGA add constraint pk_estado_entrega primary key(id_estado);
