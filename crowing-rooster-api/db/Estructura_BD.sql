@@ -133,7 +133,8 @@ create table ORDEN_PENDIENTE(
 drop table if exists PEDIDO cascade; 
 create table PEDIDO(
 	numero_pedido int not null, 
-	--comprador_codigo varchar(10) not null, 
+	--comprador_codigo varchar(10) not null,
+	cantidad_bateria int not null,
 	codigo_orden varchar(10) not null, 
 	id_bateria int not null 
 ); 
