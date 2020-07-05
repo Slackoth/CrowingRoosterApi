@@ -1,6 +1,10 @@
+\c template1
+
 drop database if exists crowing_rooster; 
 create database crowing_rooster; 
-	
+
+\c crowing_rooster
+
 drop DOMAIN if exists correo cascade;
 --create DOMAIN correo as varchar(200) check (value ~ '^\d{8}@(.com)|[a-z]+@(.com)$');
 create DOMAIN correo as varchar(200) 
@@ -182,7 +186,7 @@ alter table COMPRADOR add constraint pk_comprador primary key(codigo);
 alter table COMPRADOR add constraint fk_comprador foreign key (codigo) references USUARIO(id) on delete cascade on update cascade deferrable; 
 alter table COMPRADOR add constraint fk_empresa foreign key (id_empresa) references EMPRESA(id_empresa) on delete cascade on update cascade deferrable; 
 
----VENDEDPOR
+---VENDEDOR
 alter table VENDEDOR add constraint pk_vendedor primary key(codigo); 
 alter table VENDEDOR add constraint fk_vendedor foreign key (codigo) references USUARIO(id) on delete cascade on update cascade deferrable;  
 
