@@ -96,7 +96,8 @@ create table POLARIDAD (
 
 drop table if exists BATERIA cascade; 
 create table BATERIA(
-	id_bateria serial not null, 
+	id_bateria serial not null,
+	modelo text not null,
 	dimensiones text not null, 
 	polaridad int not null, 
 	capacidad_reserva int not null, 
