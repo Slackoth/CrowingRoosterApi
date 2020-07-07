@@ -211,6 +211,8 @@ begin
 
 		if (tipo_codigo ='O') then
 			select max(substring(codigo_orden from '-.*-(.*)$')::smallint) into numero from orden where codigo_orden like tipo_codigo || '-' || anio || '%';
+		elseif (tipo_codigo='VT') then
+			select max(substring(id_venta from '-.*-(.*)$')::smallint) into numero from venta where id_venta like tipo_codigo || '-' || anio || '%';
 		else
 			select max(substring(id from '-.*-(.*)$')::smallint) into numero from usuario where id like tipo_codigo || '-' || anio || '%';
 		end if;
@@ -404,8 +406,19 @@ insert into orden values(generar_nuevo_codigo('O'), 'Pendiente', 'V-2020-0', 'C-
 commit;
 
 prueba para cambia_subclase con ventas
-update venta set estado='Exitosa' where id_venta='VT-2020-0';
+update venta set estado='Exitosa' where id_venta='VT-2020-1';
 update orden set estado='Exitosa' where codigo_orden='O-2020-0';
 
 NOTA: es necesario que para los updates codigo_orden e id_venta se obtengan desde la app
+
+
+select u.nombre, ve.fecha_venta, sum(p.cantidad_bateria) as total,u.img,v.id_venta,o.codigo_orden 
+from venta v left outer join orden o 
+on v.vendedor_codigo = o.vendedor_codigo left outer join venta_exitosa ve 
+on v.id_venta = ve.id_venta_exitosa left outer join pedido p 
+on p.codigo_orden = o.codigo_orden left outer join usuario u 
+on o.comprador_codigo = u.id 
+where v.vendedor_codigo = 'V-2020-0' and v.estado = 'Pendiente'
+group by u.nombre,ve.fecha_venta,u.img,v.id_venta,o.codigo_orden;
+
 */
