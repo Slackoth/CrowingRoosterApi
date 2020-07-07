@@ -402,23 +402,42 @@ set constraints fk_vendedor_codigo deferred;
 set constraints fk_orden_pendiente deferred;
 
 insert into orden_pendiente values (generar_nuevo_codigo('O'), current_date);
-insert into orden values(generar_nuevo_codigo('O'), 'Pendiente', 'V-2020-0', 'C-2020-0');
+insert into orden values(generar_nuevo_codigo('O'), 'Pendiente');
 commit;
+
+insert into VENTAxORDEN values('VT-2020-0','O-2020-0');
+insert into VENTAxORDEN values('VT-2020-1','O-2020-1');
+insert into VENTAxORDEN values('VT-2020-2','O-2020-2');
 
 prueba para cambia_subclase con ventas
 update venta set estado='Exitosa' where id_venta='VT-2020-1';
+update venta set estado='Exitosa' where id_venta='VT-2020-2';
+update venta set estado='Exitosa' where id_venta='VT-2020-0';
+
 update orden set estado='Exitosa' where codigo_orden='O-2020-0';
 
 NOTA: es necesario que para los updates codigo_orden e id_venta se obtengan desde la app
 
+insert into pedido values (1, 'C-2020-0', 2, 'O-2020-0', 1);
+insert into pedido values (2, 'C-2020-0', 2, 'O-2020-1', 1);
+insert into pedido values (3, 'C-2020-0', 2, 'O-2020-2', 1);
 
-select u.nombre, ve.fecha_venta, sum(p.cantidad_bateria) as total,u.img,v.id_venta,o.codigo_orden 
-from venta v left outer join orden o 
-on v.vendedor_codigo = o.vendedor_codigo left outer join venta_exitosa ve 
-on v.id_venta = ve.id_venta_exitosa left outer join pedido p 
-on p.codigo_orden = o.codigo_orden left outer join usuario u 
-on o.comprador_codigo = u.id 
-where v.vendedor_codigo = 'V-2020-0' and v.estado = 'Pendiente'
-group by u.nombre,ve.fecha_venta,u.img,v.id_venta,o.codigo_orden;
+insert into metodo_pago values (1, 'efectivo');
+
+insert into bateria values (1,'a','a',1,1,1,1,1);
+
+insert into polaridad values (1, 'Izquierda');
+insert into calidad values (1, 'Premium');
+
+ESTA ES LA CONSULTA QUE FUNCIONÓ:
+select u.nombre, ve.fecha_venta, sum(p.cantidad_bateria) as total, u.img,v.id_venta,o.codigo_orden 
+from venta_exitosa ve inner join venta v
+on ve.id_venta_exitosa = v.id_venta inner join ventaxorden vxo
+on v.id_venta = vxo.id_venta_ventaxorden inner join orden o
+on vxo.id_orden_ventaxorden = o.codigo_orden inner join pedido p 
+on p.codigo_orden = o.codigo_orden inner join usuario u 
+on p.comprador_codigo = u.id 
+where v.vendedor_codigo = 'V-2020-0' and v.estado = 'Exitosa'
+group by v.id_venta,o.codigo_orden,u.nombre, ve.fecha_venta, u.img;
 
 */
