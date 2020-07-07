@@ -1,355 +1,364 @@
-/* 
-triggers para la superclase usuario 
-/*
-Este trigger impide que todo insert o update directo en la superclase usuario no haya sido insertado previamente en alguna de las subclases.
-*/
+--triggers para la superclase usuario
+--este trigger impide que todo insert o update directo en la superclase usuario no haya sido insertado previamente en alguna de las subclases.
 create or replace function comprueba_usuario_subclase() returns trigger as $$
-DECLARE
-    prueba_repartidor RECORD;
-    prueba_comprador RECORD;
-    prueba_vendedor RECORD;
-BEGIN
-    select into prueba_repartidor * from REPARTIDOR where codigo=new.id;
-    select into prueba_comprador * from COMPRADOR where codigo=new.id;
-    select into prueba_vendedor * from VENDEDOR where codigo=new.id;
+declare
+    prueba_repartidor record;
+    prueba_comprador record;
+    prueba_vendedor record;
+begin
+    select into prueba_repartidor * from repartidor where codigo=new.id;
+    select into prueba_comprador * from comprador where codigo=new.id;
+    select into prueba_vendedor * from vendedor where codigo=new.id;
     if (prueba_repartidor.codigo is null and prueba_comprador.codigo is null and prueba_vendedor.codigo is null)
         then
-            raise exception 'El usuario % no está introducido en ninguna subclase', new.id;
+            raise exception 'el usuario % no está introducido en ninguna subclase', new.id;
     else
         return new;
     end if;
-END;
-$$ LANGUAGE plpgsql;
+end;
+$$ language plpgsql;
 
-create trigger usuario_en_subclase before insert or update on USUARIO for each row execute procedure comprueba_usuario_subclase();
+create trigger usuario_en_subclase before insert or update on usuario for each row execute procedure comprueba_usuario_subclase();
 
-/*
-Éste trigger elimina automaticamente de la superclase si se elimina el usuario de una subclase
-*/
+--este trigger elimina automaticamente de la superclase si se elimina el usuario de una subclase
 create or replace function borrar_usuario_superclase() returns trigger as $$
-BEGIN
-	if TG_TABLE_NAME = 'COMPRADOR' then
-		delete from USUARIO where id=old.codigo;
-		raise notice 'Al borrar a % de % lo hemos borrado como usuario',old.codigo,TG_TABLE_NAME;
+begin
+	if tg_relname = 'comprador' then
+		delete from usuario where id=old.codigo;
+		raise notice 'al borrar a % de % lo hemos borrado como usuario',old.codigo,tg_relname;
 		return old;
-	elseif TG_TABLE_NAME = 'VENDEDOR' then
-		delete from USUARIO where id=old.codigo;
-		raise notice 'Al borrar a % de % lo hemos borrado como usuario',old.codigo,TG_TABLE_NAME;
+	elseif tg_relname = 'vendedor' then
+		delete from usuario where id=old.codigo;
+		raise notice 'al borrar a % de % lo hemos borrado como usuario',old.codigo,tg_relname;
 		return old;
 	else
-		delete from USUARIO where id=old.codigo;
-		raise notice 'Al borrar a % de % lo hemos borrado como usuario',old.codigo,TG_TABLE_NAME;
+		delete from usuario where id=old.codigo;
+		raise notice 'al borrar a % de % lo hemos borrado como usuario',old.codigo,tg_relname;
 		return old;
 	end if;
-END;
-$$ LANGUAGE plpgsql;
+end;
+$$ language plpgsql;
 
-create trigger borrar_usuario_comprador after delete on COMPRADOR for each row execute procedure borrar_usuario_superclase();
-create trigger borrar_usuario_vendedor after delete on VENDEDOR for each row execute procedure borrar_usuario_superclase();
-create trigger borrar_usuario_repartidor after delete on REPARTIDOR for each row execute procedure borrar_usuario_superclase();
+create trigger borrar_usuario_comprador after delete on comprador for each row execute procedure borrar_usuario_superclase();
+create trigger borrar_usuario_vendedor after delete on vendedor for each row execute procedure borrar_usuario_superclase();
+create trigger borrar_usuario_repartidor after delete on repartidor for each row execute procedure borrar_usuario_superclase();
 
-/*
-Éste trigger evita que exista el mismo objeto en más de una subclase
-*/
+--este trigger evita que exista el mismo objeto en más de una subclase
 create or replace function usuario_ya_esta_en_otra_subclase() returns trigger as $$
-DECLARE
-	prueba_comprador RECORD;
-	prueba_vendedor RECORD;
-	prueba_repartidor RECORD;
-BEGIN
-	if TG_TABLE_NAME = 'Comprador' then
-		select into prueba_vendedor * from VENDEDOR where codigo=new.codigo;
+declare
+	prueba_comprador record;
+	prueba_vendedor record;
+	prueba_repartidor record;
+begin
+	if tg_relname = 'comprador' then
+		select into prueba_vendedor * from vendedor where codigo=new.codigo;
 		if (prueba_vendedor.codigo is not null) then
-			raise exception 'El usuario % ya pertenece a la subclase vendedor',new.codigo;
+			raise exception 'el usuario % ya pertenece a la subclase vendedor',new.codigo;
 		end if;
-		select into prueba_repartidor * from REPARTIDOR where codigo=new.codigo;
+		select into prueba_repartidor * from repartidor where codigo=new.codigo;
 		if (prueba_repartidor.codigo is not null) then
-			raise exception 'El usuario % ya pertenece a la subclase repartidor',new.codigo;
+			raise exception 'el usuario % ya pertenece a la subclase repartidor',new.codigo;
 		end if;
-	elseif TG_TABLE_NAME = 'Vendedor' then
-		select into prueba_comprador * from COMPRADOR where codigo=new.codigo;
+	elseif tg_relname = 'vendedor' then
+		select into prueba_comprador * from comprador where codigo=new.codigo;
 		if (prueba_comprador.codigo is not null) then
-			raise exception 'El usuario % ya pertenece a la subclase comprador',new.codigo;
+			raise exception 'el usuario % ya pertenece a la subclase comprador',new.codigo;
 		end if;
-		select into prueba_repartidor * from REPARTIDOR where codigo=new.codigo;
+		select into prueba_repartidor * from repartidor where codigo=new.codigo;
 		if (prueba_repartidor.codigo is not null) then
-			raise exception 'El usuario % ya pertenece a la subclase repartidor',new.codigo;
+			raise exception 'el usuario % ya pertenece a la subclase repartidor',new.codigo;
 		end if;
 	else
-		select into prueba_comprador * from COMPRADOR where codigo=new.codigo;
+		select into prueba_comprador * from comprador where codigo=new.codigo;
 		if (prueba_comprador.codigo is not null) then
-			raise exception 'El usuario % ya pertenece a la subclase comprador',new.codigo;
+			raise exception 'el usuario % ya pertenece a la subclase comprador',new.codigo;
 		end if;
-		select into prueba_vendedor * from VENDEDOR where codigo=new.codigo;
+		select into prueba_vendedor * from vendedor where codigo=new.codigo;
 		if (prueba_vendedor.codigo is not null) then
-			raise exception 'El usuario % ya pertenece a la subclase vendedor',new.codigo;
+			raise exception 'el usuario % ya pertenece a la subclase vendedor',new.codigo;
 		end if;
 	end if;
 	return new;
-END;
-$$ LANGUAGE plpgsql;
+end;
+$$ language plpgsql;
 
-create trigger usuario_comprador_repetido before insert or update on COMPRADOR for each row execute procedure usuario_ya_esta_en_otra_subclase();
-create trigger usuario_vendedor_repetido before insert or update on VENDEDOR for each row execute procedure usuario_ya_esta_en_otra_subclase();
-create trigger usuario_repartidor_repetido before insert or update on REPARTIDOR for each row execute procedure usuario_ya_esta_en_otra_subclase();
-
-/* 
-triggers para la superclase orden
-/*
-/*
-Este trigger impide que todo insert o update directo en la superclase orden no haya sido insertado previamente en alguna de las subclases.
-*/
+create trigger usuario_comprador_repetido before insert or update on comprador for each row execute procedure usuario_ya_esta_en_otra_subclase();
+create trigger usuario_vendedor_repetido before insert or update on vendedor for each row execute procedure usuario_ya_esta_en_otra_subclase();
+create trigger usuario_repartidor_repetido before insert or update on repartidor for each row execute procedure usuario_ya_esta_en_otra_subclase();
+ 
+--triggers para la superclase orden
+--este trigger impide que todo insert o update directo en la superclase orden no haya sido insertado previamente en alguna de las subclases.
 create or replace function comprueba_orden_subclase() returns trigger as $$
-DECLARE
-    prueba_orden_exitosa RECORD;
-    prueba_orden_cancelada RECORD;
-    prueba_orden_pendiente RECORD;
-BEGIN
-    select into prueba_orden_exitosa * from ORDEN_EXITOSA where id_Oexitosa=new.codigo_orden;
-    select into prueba_orden_cancelada * from ORDEN_CANCELADA where id_Ocancelada=new.codigo_orden;
-    select into prueba_orden_pendiente * from ORDEN_PENDIENTE where id_Opendiente=new.codigo_orden;
-    if (prueba_orden_exitosa.id_Oexitosa is null and prueba_orden_cancelada.id_Ocancelada is null and prueba_orden_pendiente.id_Opendiente is null)
+declare
+    prueba_orden_exitosa record;
+    prueba_orden_cancelada record;
+    prueba_orden_pendiente record;
+begin
+    select into prueba_orden_exitosa * from orden_exitosa where id_oexitosa=new.codigo_orden;
+    select into prueba_orden_cancelada * from orden_cancelada where id_ocancelada=new.codigo_orden;
+    select into prueba_orden_pendiente * from orden_pendiente where id_opendiente=new.codigo_orden;
+    if (prueba_orden_exitosa.id_oexitosa is null and prueba_orden_cancelada.id_ocancelada is null and prueba_orden_pendiente.id_opendiente is null)
         then
-            raise exception 'La orden % no está introducida en ninguna subclase', new.codigo_orden;
+            raise exception 'la orden % no está introducida en ninguna subclase', new.codigo_orden;
     else
         return new;
     end if;
-END;
-$$ LANGUAGE plpgsql;
+end;
+$$ language plpgsql;
 
-create trigger orden_en_subclase before insert or update on ORDEN for each row execute procedure comprueba_orden_subclase();
+create trigger orden_en_subclase before insert or update on orden for each row execute procedure comprueba_orden_subclase();
 
-/*
-Éste trigger elimina automaticamente de la superclase si se elimina una orden de una subclase
-*/
-create or replace function borrar_orden_superclase() returns trigger as $$
-BEGIN
-	if TG_TABLE_NAME = 'ORDEN_EXITOSA' then
-		delete from ORDEN where codigo_orden=old.id_Oexitosa;
-		raise notice 'Al borrar la orden: % de % la hemos borrado de orden',old.id_Oexitosa,TG_TABLE_NAME;
-		return old;
-	elseif TG_TABLE_NAME = 'ORDEN_CANCELADA' then
-		delete from ORDEN where codigo_orden=old.id_Ocancelada;
-		raise notice 'Al borrar la orden: % de % la hemos borrado de orden',old.id_Ocancelada,TG_TABLE_NAME;
-		return old;
-	else
-		delete from ORDEN where codigo_orden=old.id_Opendiente;
-		raise notice 'Al borrar la orden: % de % la hemos borrado de orden',old.id_Opendiente,TG_TABLE_NAME;
-		return old;
-	end if;
-END;
-$$ LANGUAGE plpgsql;
-
-create trigger borrar_orden_exitosa after delete on ORDEN_EXITOSA for each row execute procedure borrar_orden_superclase();
-create trigger borrar_orden_cancelada after delete on ORDEN_CANCELADA for each row execute procedure borrar_orden_superclase();
-create trigger borrar_orden_pendiente after delete on ORDEN_PENDIENTE for each row execute procedure borrar_orden_superclase();
-
-/*
-Éste trigger evita que exista el mismo objeto en más de una subclase
-*/
+--este trigger evita que exista el mismo objeto en más de una subclase
 create or replace function orden_ya_esta_en_otra_subclase() returns trigger as $$
-DECLARE
-    prueba_orden_exitosa RECORD;
-    prueba_orden_cancelada RECORD;
-    prueba_orden_pendiente RECORD;
-BEGIN
-	if TG_TABLE_NAME = 'ORDEN_EXITOSA' then
-		select into prueba_orden_cancelada * from ORDEN_CANCELADA where id_Ocancelada=new.id_Oexitosa;
-		if (prueba_orden_cancelada.id_Ocancelada is not null) then
-			raise exception 'La orden % ya pertenece a la subclase orden cancelada',new.id_Oexitosa;
+declare
+    prueba_orden_exitosa record;
+    prueba_orden_cancelada record;
+    prueba_orden_pendiente record;
+begin
+	if tg_relname = 'orden_exitosa' then
+		select into prueba_orden_cancelada * from orden_cancelada where id_ocancelada=new.id_oexitosa;
+		if (prueba_orden_cancelada.id_ocancelada is not null) then
+			raise exception 'la orden % ya pertenece a la subclase orden cancelada',new.id_oexitosa;
 		end if;
-		select into prueba_orden_pendiente * from ORDEN_PENDIENTE where id_Opendiente=new.id_Oexitosa;
-		if (prueba_orden_pendiente.id_Opendiente is not null) then
-			raise exception 'La orden % ya pertenece a la subclase orden pendiente',new.id_Oexitosa;
+		select into prueba_orden_pendiente * from orden_pendiente where id_opendiente=new.id_oexitosa;
+		if (prueba_orden_pendiente.id_opendiente is not null) then
+			raise exception 'la orden % ya pertenece a la subclase orden pendiente',new.id_oexitosa;
 		end if;
-	elseif TG_TABLE_NAME = 'ORDEN_CANCELADA' then
-		select into prueba_orden_exitosa * from ORDEN_EXITOSA where id_Oexitosa=new.id_Ocancelada;
-		if (prueba_orden_exitosa.id_Oexitosa is not null) then
-			raise exception 'La orden % ya pertenece a la subclase orden exitosa',new.id_Ocancelada;
+	elseif tg_relname = 'orden_cancelada' then
+		select into prueba_orden_exitosa * from orden_exitosa where id_oexitosa=new.id_ocancelada;
+		if (prueba_orden_exitosa.id_oexitosa is not null) then
+			raise exception 'la orden % ya pertenece a la subclase orden exitosa',new.id_ocancelada;
 		end if;
-		select into prueba_orden_pendiente * from ORDEN_PENDIENTE where id_Opendiente=new.id_Ocancelada;
-		if (prueba_orden_pendiente.id_Opendiente is not null) then
-			raise exception 'La orden % ya pertenece a la subclase orden pendiente',new.id_Ocancelada;
+		select into prueba_orden_pendiente * from orden_pendiente where id_opendiente=new.id_ocancelada;
+		if (prueba_orden_pendiente.id_opendiente is not null) then
+			raise exception 'la orden % ya pertenece a la subclase orden pendiente',new.id_ocancelada;
 		end if;
-	else
-		select into prueba_orden_exitosa * from ORDEN_EXITOSA where id_Oexitosa=new.id_Opendiente;
-		if (prueba_orden_exitosa.id_Oexitosa is not null) then
-			raise exception 'La orden % ya pertenece a la subclase orden exitosa',new.id_Opendiente;
+	elseif tg_relname = 'orden_pendiente' then
+		select into prueba_orden_exitosa * from orden_exitosa where id_oexitosa=new.id_opendiente;
+		if (prueba_orden_exitosa.id_oexitosa is not null) then
+			raise exception 'la orden % ya pertenece a la subclase orden exitosa',new.id_opendiente;
 		end if;
-		select into prueba_orden_cancelada * from ORDEN_CANCELADA where id_Ocancelada=new.id_Opendiente;
-		if (prueba_orden_cancelada.id_Ocancelada is not null) then
-			raise exception 'La orden % ya pertenece a la subclase orden cancelada',new.id_Opendiente;
+		select into prueba_orden_cancelada * from orden_cancelada where id_ocancelada=new.id_opendiente;
+		if (prueba_orden_cancelada.id_ocancelada is not null) then
+			raise exception 'la orden % ya pertenece a la subclase orden cancelada',new.id_opendiente;
 		end if;
 	end if;
 	return new;
-END;
-$$ LANGUAGE plpgsql;
+end;
+$$ language plpgsql;
 
-create trigger orden_exitosa_repetida before insert or update on ORDEN_EXITOSA for each row execute procedure orden_ya_esta_en_otra_subclase();
-create trigger orden_cancelada_repetida before insert or update on ORDEN_CANCELADA for each row execute procedure orden_ya_esta_en_otra_subclase();
-create trigger orden_pendiente_repetida before insert or update on ORDEN_PENDIENTE for each row execute procedure orden_ya_esta_en_otra_subclase();
+create trigger orden_exitosa_repetida before insert or update on orden_exitosa for each row execute procedure orden_ya_esta_en_otra_subclase();
+create trigger orden_cancelada_repetida before insert or update on orden_cancelada for each row execute procedure orden_ya_esta_en_otra_subclase();
+create trigger orden_pendiente_repetida before insert or update on orden_pendiente for each row execute procedure orden_ya_esta_en_otra_subclase();
 
-/*
-triggers para la superclase venta
-*/
-/*
-Éste trigger impide todo insert o update directo en la superclase venta no haya sido insertado previamente en alguna de las subclases.
-*/
+--triggers para la superclase venta:
+--este trigger impide todo insert o update directo en la superclase venta no haya sido insertado previamente en alguna de las subclases.
 create or replace function comprueba_venta_subclase() returns trigger as $$
-DECLARE
-	prueba_venta_exitosa RECORD;
-	prueba_venta_pendiente RECORD;
-BEGIN
-	select into prueba_venta_exitosa * from VENTA_EXITOSA where id_venta_exitosa=new.id_venta;
-	select into prueba_venta_pendiente * from VENTA_PENDIENTE where id_venta_pendiente=new.id_venta;
+declare
+	prueba_venta_exitosa record;
+	prueba_venta_pendiente record;
+begin
+	select into prueba_venta_exitosa * from venta_exitosa where id_venta_exitosa=new.id_venta;
+	select into prueba_venta_pendiente * from venta_pendiente where id_venta_pendiente=new.id_venta;
 	if (prueba_venta_exitosa.id_venta_exitosa is null and prueba_venta_pendiente.id_venta_pendiente is null)
 		then
-			raise exception 'La venta con el id: % no está introducida en ninguna subclase',new.id_venta;
+			raise exception 'la venta con el id: % no está introducida en ninguna subclase',new.id_venta;
 	else
 		return new;
 	end if;
-END;
-$$ LANGUAGE plpgsql;
+end;
+$$ language plpgsql;
 
-create trigger venta_en_subclase before insert or update on VENTA for each row execute procedure comprueba_venta_subclase();
+create trigger venta_en_subclase before insert or update on venta for each row execute procedure comprueba_venta_subclase();
 
-/*
-Éste trigger elimina automaticamente de la superclase si se elimina una venta de una subclase
-*/
-create or replace function borrar_venta_superclase() returns trigger as $$
-BEGIN
-	if TG_TABLE_NAME = 'VENTA_EXITOSA' then
-		delete from VENTA where id_venta=old.id_venta_exitosa;
-		raise notice 'Al borrar la venta con id: % de % la hemos borrado como venta',old.id_venta_exitosa,TG_TABLE_NAME;
-		return old;
-	else
-		delete from VENTA where id_venta=old.id_venta_pendiente;
-		raise notice 'Al borrar la venta con id: % de % la hemos borrado como venta',old.id_venta_pendiente,TG_TABLE_NAME;
-		return old;
-	end if;
-END;
-$$ LANGUAGE plpgsql;
-
-create trigger borrar_venta_exitosa after delete on VENTA_EXITOSA for each row execute procedure borrar_venta_superclase();
-create trigger borrar_venta_pendiente after delete on VENTA_PENDIENTE for each row execute procedure borrar_venta_superclase();
-
-/*
-Éste trigger evita que exista el mismo objeto en más de una subclase
-*/
+--este trigger evita que exista el mismo objeto en más de una subclase
 create or replace function venta_ya_esta_en_otra_subclase() returns trigger as $$
-DECLARE
-	prueba_venta_exitosa RECORD;
-	prueba_venta_pendiente RECORD;
-BEGIN
-	if TG_TABLE_NAME = 'VENTA_EXITOSA' then
-		select into prueba_venta_pendiente * from VENTA_PENDIENTE where id_venta_pendiente=new.id_venta_exitosa;
-		if (prueba_soporte.id_venta_pendiente is not null) then
-			raise exception 'La venta con id: % ya pertenece a venta exitosa',new.id_venta_exitosa;
+declare
+	prueba_venta_exitosa record;
+	prueba_venta_pendiente record;
+begin
+	if tg_relname = 'venta_exitosa' then
+		select into prueba_venta_pendiente * from venta_pendiente where id_venta_pendiente=new.id_venta_exitosa;
+		if (prueba_venta_pendiente.id_venta_pendiente is not null) then
+			raise exception 'la venta con id: % ya pertenece a venta pendiente',new.id_venta_exitosa;
 		end if;
-	else
-		select into prueba_venta_exitosa * from VENTA_EXITOSA where id_venta_exitosa=new.id_venta_pendiente;
-		if (prueba_docente.id_venta_exitosa is not null) then
-			raise exception 'La venta con id: % ya pertenece a venta pendiente',new.id_venta_pendiente;
+	elseif tg_relname = 'venta_pendiente' then
+		select into prueba_venta_exitosa * from venta_exitosa where id_venta_exitosa=new.id_venta_pendiente;
+		if (prueba_venta_exitosa.id_venta_exitosa is not null) then
+			raise exception 'la venta con id: % ya pertenece a venta exitosa',new.id_venta_pendiente;
 		end if;
 	end if;
 	return new;
-END;
-$$ LANGUAGE plpgsql;
+end;
+$$ language plpgsql;
 
-create trigger venta_exitosa_repetida before insert or update on VENTA_EXITOSA for each row execute procedure venta_ya_esta_en_otra_subclase();
-create trigger venta_pendiente_repetida before insert or update on VENTA_PENDIENTE for each row execute procedure venta_ya_esta_en_otra_subclase();
+create trigger venta_exitosa_repetida before insert or update on venta_exitosa for each row execute procedure venta_ya_esta_en_otra_subclase();
+create trigger venta_pendiente_repetida before insert or update on venta_pendiente for each row execute procedure venta_ya_esta_en_otra_subclase();
 
-/* Se ha decidido estandarizar los códigos de los usuarios según la siguiente estructura: (Letra-Año-Iterativo) donde 
-  Letra = C (Comprador), V (Vendedor) y R (Repartidor)
-  Año = año de la creación, 4 dígitos
-  Iterativo = número incremental según coincidencia de Letra-Año
-  Ejemplo: C-2020-1
-*/
-CREATE OR REPLACE FUNCTION nuevo_codigo_usuario(tipo_usuario varchar) RETURNS varchar AS $$
-DECLARE
+--se ha decidido estandarizar los códigos de los usuarios según la siguiente estructura: (letra-año-iterativo) donde:
+--letra = c (comprador), v (vendedor) y r (repartidor)
+--año = año de la creación, 4 dígitos
+--iterativo = número incremental según coincidencia de letra-año
+--ejemplo: c-2020-1
+create or replace function nuevo_codigo_usuario(tipo_usuario varchar) returns varchar as $$
+declare
 	numero smallint;
-	codigocons VARCHAR(8);
-	anio CHAR(4);
-BEGIN
-	IF (tipo_usuario='C' OR tipo_usuario='V' OR tipo_usuario='R')
-	THEN
-		SELECT INTO anio extract(year FROM CURRENT_DATE);
+	codigocons varchar(8);
+	anio char(4);
+begin
+	if (tipo_usuario='c' or tipo_usuario='v' or tipo_usuario='r')
+	then
+		select into anio extract(year from current_date);
 
-		SELECT max(substring(id FROM '-.*-(.*)$')::smallint) INTO numero FROM USUARIO WHERE id LIKE tipo_usuario || '-' || anio || '%';
+		select max(substring(id from '-.*-(.*)$')::smallint) into numero from usuario where id like tipo_usuario || '-' || anio || '%';
 
-		IF numero IS NULL THEN
+		if numero is null then
             numero:=1;
-		ELSE
+		else
             numero:=numero+1;
-        END IF;
+        end if;
 	
 		codigocons:=tipo_usuario || '-' || anio || '-' || numero;
 		
-		RAISE NOTICE 'Nuevo código: %',codigocons;
-		RETURN codigocons;
-	ELSE
-		RAISE EXCEPTION 'El tipo de usuario % no es válido', tipo_usuario;
-	END IF;
-END;
-$$ LANGUAGE plpgsql;
+		raise notice 'nuevo código: %',codigocons;
+		return codigocons;
+	else
+		raise exception 'el tipo de usuario % no es válido', tipo_usuario;
+	end if;
+end;
+$$ language plpgsql;
+
+
+-- función para comprobar la corrección del id ante inserción o actualización
+create or replace function id_usuario_correcto() returns trigger as $$
+declare
+	anio smallint;
+	anioact smallint;
+	tipo varchar;
+	codigocons varchar(8);
+	partenumero varchar;
+	numero smallint;
+	id_usuario usuario.id%type;
+begin
+	tipo:=split_part(new.id, '-', 1); 
+	if (char_length(tipo)!=1 or (tipo!='c' and tipo!='v' and tipo!='r'))
+	then
+		raise exception 'el tipo de usuario % no es válido', tipo;
+	else
+		select into anioact extract(year from current_date); 
+		
+		anio:=split_part(new.id, '-', 2)::smallint; 
+
+		select into id_usuario id from usuario where anio=split_part(id, '-', 2)::smallint limit 1;
+
+		if (anio!=anioact)
+		then
+			raise exception 'el año del usuario % no es válido', anio;
+		else
+			partenumero:=split_part(new.id, '-', 3);
+
+			begin
+				numero:=to_number(partenumero,'9');
+                exception when data_exception then
+				raise exception 'el numero incremental de usuario % no es válido', partenumero;
+			end;
+		end if;
+	end if;
+	return new;
+end;
+$$ language plpgsql;
+
+create trigger id_usuario_correcto before insert or update on usuario for each row execute procedure id_usuario_correcto();
+
+--este trigger escucha los updates con la superclase venta cuando el esta de la venta es alterado y cambia las ventas
+--de la subclase venta_pendiente a venta_exitosa
+create or replace function cambia_subclase() returns trigger as $$
+declare
+	prueba_venta record;
+	prueba_orden record;
+begin
+	if (tg_relname= 'venta' and new.estado='Exitosa') then
+
+		select into prueba_venta * from venta_exitosa where id_venta_exitosa=new.id_venta;
+
+		if prueba_venta.id_venta_exitosa is null then 
+			delete from venta_pendiente where id_venta_pendiente=new.id_venta;
+			insert into venta_exitosa values (new.id_venta, current_date, '12.12', 1); --el precio debe obtenerse de la app
+			raise notice 'se ha borrado de venta_pendiente la venta con el id: %, se ha insertado en venta_exitosa y se ha cambiado el estado en % a: %', new.id_venta, tg_relname, new.estado;
+		end if;
+	elseif (tg_relname = 'orden' and new.estado='Exitosa') then
+
+		select into prueba_orden * from orden_exitosa where id_oexitosa=new.codigo_orden;
+
+		if prueba_orden.id_oexitosa is null then
+			delete from orden_pendiente where id_opendiente=new.codigo_orden;
+			insert into orden_exitosa values (new.codigo_orden, current_date, (to_char(current_timestamp, 'hh12:mi:ss')), '12.12', 1); -- el precio debe obtenerse de la app o en su defecto de una tabla a la que se pueda acceder esa info.
+			raise notice 'se ha borrado de orden_pendiente la orden con el id: %, se ha insertado en orden_exitosa y se ha cambiado es estado en % a: %', new.codigo_orden, tg_relname, new.estado;
+		end if;
+	elseif (tg_relname = 'orden' and new.estado='Cancelada') then
+		select into prueba_orden * from orden_cancelada where id_ocancelada=new.codigo_orden;
+
+		if prueba_orden.id_ocancelada is null then
+			delete from orden_pendiente where id_opendiente=new.codigo_orden;
+			insert into orden_cancelada values (new.codigo_orden, current_date);
+			raise notice 'se ha borrado de orden pendiente la orden con el id: %, se ha insertado en orden_cancelada y se ha cambiado el estado en % a: %', new.codigo_orden, tg_relname, new.estado;
+		end if;
+	end if;
+	return new;
+end;
+$$ language plpgsql;
+
+drop trigger if exists cambia_venta_subclase on venta;
+drop trigger if exists cambia_orden_subclase on orden;
+create constraint trigger cambia_venta_subclase after update on venta for each row execute procedure cambia_subclase();
+create constraint trigger cambia_orden_subclase after update on orden for each row execute procedure cambia_subclase();
 
 /*
 pruebas:
-select * from nuevo_codigo_usuario('C');
-select * from nuevo_codigo_usuario('K');
+select * from nuevo_codigo_usuario('c');
+select * from nuevo_codigo_usuario('k');
 */
-
--- Función para comprobar la corrección del id ante inserción o actualización
-CREATE OR REPLACE FUNCTION id_usuario_correcto() RETURNS trigger AS $$
-DECLARE
-	anio smallint;
-	anioact smallint;
-	tipo VARCHAR;
-	codigocons VARCHAR(8);
-	partenumero VARCHAR;
-	numero smallint;
-	id_usuario USUARIO.id%TYPE;
-BEGIN
-	tipo:=split_part(NEW.id, '-', 1); 
-	IF (char_length(tipo)!=1 OR (tipo!='C' AND tipo!='V' AND tipo!='R'))
-	THEN
-		RAISE EXCEPTION 'El tipo de usuario % no es válido', tipo;
-	ELSE
-		SELECT INTO anioact extract(year from CURRENT_DATE); 
-		
-		anio:=split_part(NEW.id, '-', 2)::smallint; 
-
-		SELECT INTO id_usuario id FROM USUARIO WHERE anio=split_part(id, '-', 2)::smallint LIMIT 1;
-
-		IF (anio!=anioact)
-		THEN
-			RAISE EXCEPTION 'El año del usuario % no es válido', anio;
-		ELSE
-			partenumero:=split_part(NEW.id, '-', 3);
-
-			BEGIN
-				numero:=to_number(partenumero,'9');
-                EXCEPTION WHEN data_exception THEN
-				RAISE EXCEPTION 'El numero incremental de usuario % no es válido', partenumero;
-			END;
-		END IF;
-	END IF;
-	RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-create trigger id_usuario_correcto BEFORE INSERT OR UPDATE ON USUARIO FOR EACH ROW EXECUTE PROCEDURE id_usuario_correcto();
 
 /*
 pruebas: 
 
-BEGIN;
+begin;
+set constraints fk_comprador deferred;
 
-SET CONSTRAINTS fk_comprador DEFERRED;
+insert into comprador values(nuevo_codigo_usuario('c'),'0','asdf@crowingrooster.com');
+insert into usuario values (nuevo_codigo_usuario('c'),'comprador','luis','12345','Comprador','img');
+commit;
 
-insert into COMPRADOR values(nuevo_codigo_usuario('C'),'0','asdf@crowingrooster.com');
-insert into USUARIO values (nuevo_codigo_usuario('C'),'comprador','luis','12345','Comprador','img');
+begin;
+set constraints fk_vendedor deferred;
 
+insert into vendedor values(nuevo_codigo_usuario('v'),'asdf@crowingrooster.com');
+insert into usuario values (nuevo_codigo_usuario('v'),'Vendedor','luis','12345','Vendedor','img');
+commit;
 
-COMMIT;
+begin;
+set constraints fk_vendedor_codigo deferred;
+set constraints fk_venta_pendiente deferred;
+
+insert into venta_pendiente values('1','2020-07-06');
+insert into venta values('1','Pendiente','v-2020-1');
+commit;
+
+begin;
+set constraints fk_comprador_codigo deferred;
+set constraints fk_vendedor_codigo deferred;
+set constraints fk_orden_pendiente deferred;
+
+insert into orden_pendiente values ('3', current_date);
+insert into orden values('3', 'Pendiente', 'v-2020-1', 'c-2020-1');
+commit;
+
+prueba para cambia_subclase con ventas
+update venta set estado='Exitosa' where id_venta='1';
+update venta set estado='pendiente' where id_venta='1';
+update orden set estado='Cancelada' where codigo_orden='3';
+update orden set estado='pendiente' where codigo_orden='1';
+
+insert into orden_exitosa values ('1', current_date, (to_char(current_timestamp, 'hh12:mi:ss')), '12.12', 1);
+
 */
