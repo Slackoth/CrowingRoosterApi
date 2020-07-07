@@ -196,7 +196,7 @@ create trigger venta_exitosa_repetida before insert or update on venta_exitosa f
 create trigger venta_pendiente_repetida before insert or update on venta_pendiente for each row execute procedure venta_ya_esta_en_otra_subclase();
 
 --se ha decidido estandarizar los códigos de los usuarios según la siguiente estructura: (letra-año-iterativo) donde:
---letra = c (comprador), v (vendedor) y r (repartidor)
+--letra = c (comprador), v (vendedor), r (repartidor) y s(ventas y ordenes)
 --año = año de la creación, 4 dígitos
 --iterativo = número incremental según coincidencia de letra-año
 --ejemplo: c-2020-1
@@ -206,11 +206,15 @@ declare
 	codigocons varchar(8);
 	anio char(4);
 begin
-	if (tipo_usuario='c' or tipo_usuario='v' or tipo_usuario='r')
+	if (tipo_usuario='c' or tipo_usuario='v' or tipo_usuario='r' or tipo_usuario='s')
 	then
 		select into anio extract(year from current_date);
 
-		select max(substring(id from '-.*-(.*)$')::smallint) into numero from usuario where id like tipo_usuario || '-' || anio || '%';
+		if (tipo_usuario ='s') then
+			select max(substring(codigo_orden from '-.*-(.*)$')::smallint) into numero from orden where codigo_orden like tipo_usuario || '-' || anio || '%';
+		else
+			select max(substring(id from '-.*-(.*)$')::smallint) into numero from usuario where id like tipo_usuario || '-' || anio || '%';
+		end if;
 
 		if numero is null then
             numero:=1;
@@ -223,11 +227,10 @@ begin
 		raise notice 'nuevo código: %',codigocons;
 		return codigocons;
 	else
-		raise exception 'el tipo de usuario % no es válido', tipo_usuario;
+		raise exception 'el tipo de codigo % no es válido', tipo_usuario;
 	end if;
 end;
 $$ language plpgsql;
-
 
 -- función para comprobar la corrección del id ante inserción o actualización
 create or replace function id_usuario_correcto() returns trigger as $$
@@ -239,36 +242,64 @@ declare
 	partenumero varchar;
 	numero smallint;
 	id_usuario usuario.id%type;
+	codigo_venta_orden orden.codigo_orden%type;
 begin
-	tipo:=split_part(new.id, '-', 1); 
-	if (char_length(tipo)!=1 or (tipo!='c' and tipo!='v' and tipo!='r'))
-	then
-		raise exception 'el tipo de usuario % no es válido', tipo;
+
+	if (tg_relname = 'usuario') then
+		tipo:=split_part(new.id, '-', 1);
+	elseif (tg_relname = 'orden') then
+		tipo:=split_part(new.codigo_orden, '-', 1);
+	end if;
+
+	if (char_length(tipo)!=1 or (tipo!='c' and tipo!='v' and tipo!='r' and tipo!='s')) then
+		raise exception 'el tipo de codigo % no es válido', tipo;
 	else
-		select into anioact extract(year from current_date); 
-		
-		anio:=split_part(new.id, '-', 2)::smallint; 
+		if (tipo='s') then
+			select into anioact extract(year from current_date);
 
-		select into id_usuario id from usuario where anio=split_part(id, '-', 2)::smallint limit 1;
+			anio:=split_part(new.codigo_orden, '-', 2)::smallint;
 
-		if (anio!=anioact)
-		then
-			raise exception 'el año del usuario % no es válido', anio;
+			select into codigo_venta_orden codigo_orden from orden where anio=split_part(codigo_orden, '-', 2)::smallint limit 1;
+
+			if (anio!=anioact) then
+				raise exception 'el año del codigo % no es válido', anio;
+			else
+				partenumero:=split_part(new.codigo_orden, '-', 3);
+
+				begin
+					numero:=to_number(partenumero,'9');
+					exception when data_exception then
+					raise exception 'el numero incremental de codigo % no es válido', partenumero;
+				end;
+			end if;
 		else
-			partenumero:=split_part(new.id, '-', 3);
+			select into anioact extract(year from current_date);
+				
+			anio:=split_part(new.id, '-', 2)::smallint;
 
-			begin
-				numero:=to_number(partenumero,'9');
-                exception when data_exception then
-				raise exception 'el numero incremental de usuario % no es válido', partenumero;
-			end;
+			select into id_usuario id from usuario where anio=split_part(id, '-', 2)::smallint limit 1;
+
+			if (anio!=anioact) then
+				raise exception 'el año del usuario % no es válido', anio;
+			else
+				partenumero:=split_part(new.id, '-', 3);
+
+				begin
+					numero:=to_number(partenumero,'9');
+					exception when data_exception then
+					raise exception 'el numero incremental de usuario % no es válido', partenumero;
+				end;
+			end if;
 		end if;
 	end if;
 	return new;
 end;
 $$ language plpgsql;
 
+drop trigger if exists id_usuario_correcto on usuario;
+drop trigger if exists codigo_venta_orden_correcto on orden;
 create trigger id_usuario_correcto before insert or update on usuario for each row execute procedure id_usuario_correcto();
+create trigger codigo_venta_orden_correcto before insert or update on orden for each row execute procedure id_usuario_correcto();
 
 --este trigger escucha los updates con la superclase venta cuando el esta de la venta es alterado y cambia las ventas
 --de la subclase venta_pendiente a venta_exitosa
@@ -339,24 +370,22 @@ commit;
 begin;
 set constraints fk_vendedor_codigo deferred;
 set constraints fk_venta_pendiente deferred;
-
-insert into venta_pendiente values('1','2020-07-06');
-insert into venta values('1','Pendiente','v-2020-1');
-commit;
-
-begin;
 set constraints fk_comprador_codigo deferred;
 set constraints fk_vendedor_codigo deferred;
 set constraints fk_orden_pendiente deferred;
 
-insert into orden_pendiente values ('3', current_date);
-insert into orden values('3', 'Pendiente', 'v-2020-1', 'c-2020-1');
+
+insert into venta_pendiente values(nuevo_codigo_usuario('s'),'2020-07-06');
+insert into venta values(nuevo_codigo_usuario('s'),'Pendiente','v-2020-1');
+
+insert into orden_pendiente values (nuevo_codigo_usuario('s'), current_date);
+insert into orden values(nuevo_codigo_usuario('s'), 'Pendiente', 'v-2020-1', 'c-2020-1');
 commit;
 
 prueba para cambia_subclase con ventas
-update venta set estado='Exitosa' where id_venta='1';
+update venta set estado='Exitosa' where id_venta='s-2020-1';
 update venta set estado='pendiente' where id_venta='1';
-update orden set estado='Cancelada' where codigo_orden='3';
+update orden set estado='Exitosa' where codigo_orden='s-2020-1';
 update orden set estado='pendiente' where codigo_orden='1';
 
 insert into orden_exitosa values ('1', current_date, (to_char(current_timestamp, 'hh12:mi:ss')), '12.12', 1);
