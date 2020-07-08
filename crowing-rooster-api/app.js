@@ -8,7 +8,11 @@ var indexRouter = require('./routes/index');
 var sellerClientRouter = require('./routes/sellerClient');
 var sellerRouter = require('./routes/seller');
 var salePreviewRouter = require('./routes/salePreview')
+
 var productRouter= require('./routes/product')
+
+var saleDetailsRouter = require('./routes/saleDetails')
+
 // var usersRouter = require('./routes/users');
 
 var app = express();
@@ -28,6 +32,9 @@ app.use('/sellerclient',sellerClientRouter);
 app.use('/seller',sellerRouter);
 app.use('/salepreview',salePreviewRouter)
 app.use('/product', productRouter)
+
+app.use('/saledetails',saleDetailsRouter)
+
 // app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler
