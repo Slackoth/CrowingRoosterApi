@@ -12,7 +12,7 @@ check ( value ~ '^[a-zA-Z0-9.!#$%&''*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0
 
 drop table if exists USUARIO cascade; 
 create table USUARIO(
-	id varchar(10) not null, 
+	id varchar(100) not null, 
 	usuario text not null, 
 	nombre text not null, 
 	clave text not null, 
@@ -22,12 +22,12 @@ create table USUARIO(
 
 drop table if exists REPARTIDOR cascade ; 
 create table REPARTIDOR(
-	codigo varchar(10) not null
+	codigo varchar(100) not null
 );
 
 drop table if exists COMPRADOR cascade; 
 create table COMPRADOR(
-	codigo varchar(10) not null, 
+	codigo varchar(100) not null, 
 	dui varchar(10) not null, 
 	email correo not null, 
 	id_empresa int
@@ -35,7 +35,7 @@ create table COMPRADOR(
 
 drop table if exists VENDEDOR cascade; 
 create table VENDEDOR(
-	codigo varchar(10) not null, 
+	codigo varchar(100) not null, 
 	email correo not null
 ); 
 
@@ -43,9 +43,9 @@ drop table if exists TELEFONO cascade;
 create table TELEFONO(
 	id_telefono serial not null, 
 	telefono varchar(10) not null, 
-	comprador_codigo varchar(10), 
-	vendedor_codigo varchar(10), 
-	repartidor_codigo varchar(10)
+	comprador_codigo varchar(100), 
+	vendedor_codigo varchar(100), 
+	repartidor_codigo varchar(100)
 ); 
 
 drop table if exists EMPRESA cascade; 
@@ -57,9 +57,9 @@ create table EMPRESA(
 
 drop table if exists VENTA cascade;  
 create table VENTA (
-	id_venta varchar(10) not null, 
+	id_venta varchar(100) not null, 
 	estado text not null check (estado in ('Exitosa','Pendiente')), 
-	vendedor_codigo varchar(10) not null
+	vendedor_codigo varchar(100) not null
 ); 
 
 drop table if exists METODO_PAGO cascade; 
@@ -70,7 +70,7 @@ create table METODO_PAGO(
 
 drop table if exists VENTA_EXITOSA cascade;  
 create table VENTA_EXITOSA(
-	id_venta_exitosa varchar(10) not null,
+	id_venta_exitosa varchar(100) not null,
 	fecha_venta date not null, 
 	precio money not null, 
 	metodo_pago int not null 
@@ -78,7 +78,7 @@ create table VENTA_EXITOSA(
 
 drop table if exists VENTA_PENDIENTE cascade;  
 create table VENTA_PENDIENTE(
-	id_venta_pendiente varchar(10) not null,
+	id_venta_pendiente varchar(100) not null,
 	fecha_pedido text not null
 ); 
  
@@ -96,7 +96,8 @@ create table POLARIDAD (
 
 drop table if exists BATERIA cascade; 
 create table BATERIA(
-	id_bateria serial not null, 
+	id_bateria serial not null,
+	modelo text not null,
 	dimensiones text not null, 
 	polaridad int not null, 
 	capacidad_reserva int not null, 
@@ -107,15 +108,15 @@ create table BATERIA(
 
 drop table if exists ORDEN cascade; 
 create table ORDEN(
-	codigo_orden varchar(10) not null, 
+	codigo_orden varchar(100) not null, 
 	estado text not null check (estado in ('Exitosa','Pendiente', 'Cancelada')), 
-	vendedor_codigo varchar(10) not null, 
-	comprador_codigo varchar(10) not null
+	vendedor_codigo varchar(100) not null, 
+	comprador_codigo varchar(100) not null
 );
 
 drop table if exists ORDEN_EXITOSA cascade;  
 create table ORDEN_EXITOSA (
-	id_Oexitosa varchar(10) not null, 
+	id_Oexitosa varchar(100) not null, 
 	fecha_entrega date not null, 
 	hora_entrega varchar(10) not null, 
 	precio_total money not null, 
@@ -124,13 +125,13 @@ create table ORDEN_EXITOSA (
 
 drop table if exists ORDEN_CANCELADA cascade;  
 create table ORDEN_CANCELADA(
-	id_Ocancelada varchar(10) not null, 
+	id_Ocancelada varchar(100) not null, 
 	fecha_cancelada date not null 
 ); 
 
 drop table if exists ORDEN_PENDIENTE cascade; 
 create table ORDEN_PENDIENTE(
-	id_Opendiente varchar(10) not null,
+	id_Opendiente varchar(100) not null,
 	fecha_pendiente date not null 
 ); 
 
@@ -139,7 +140,7 @@ create table PEDIDO(
 	numero_pedido serial, 
 	--comprador_codigo varchar(10) not null,
 	cantidad_bateria int not null,
-	codigo_orden varchar(10) not null, 
+	codigo_orden varchar(100) not null, 
 	id_bateria int not null 
 ); 
 
@@ -164,7 +165,7 @@ create table REPARTIDORxENTREGA(
 
 drop table if exists VENTA_EXITOSAxENTREGA cascade;  
 create table VENTA_EXITOSAxENTREGA(
-	id_venta_exitosa varchar(10) not null, 
+	id_venta_exitosa varchar(100) not null, 
 	id_entrega int not null, 
 	direccion_entrega text not null, 
 	hora_entrega text not null
