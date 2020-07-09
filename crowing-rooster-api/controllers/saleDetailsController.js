@@ -13,7 +13,9 @@ const getSuccessfulSaleDetails = async (req,res) => {
         'cantidad',p.cantidad_bateria,
         'modelo',b.modelo,
         'calidad',c2.tipo ,
-        'polaridad',p2.direccion 
+        'polaridad',p2.direccion,
+        'id_venta',v.id_venta,
+        'id_pedido',p.numero_pedido 
     )) as pedidos
     from venta v inner join ventaxorden v2
     on v.id_venta = v2.id_venta inner join orden o 
@@ -53,7 +55,9 @@ const getOngoingSaleDetails = async (req,res) => {
         'cantidad',p.cantidad_bateria,
         'modelo',b.modelo,
         'calidad',c2.tipo ,
-        'polaridad',p2.direccion 
+        'polaridad',p2.direccion,
+        'id_venta',v.id_venta,
+        'id_pedido',p.numero_pedido
     )) as pedidos
     from venta v inner join ventaxorden v2
     on v.id_venta = v2.id_venta inner join orden o 
