@@ -103,7 +103,8 @@ create table BATERIA(
 	capacidad_reserva int not null, 
 	calidad int not null, 
 	amperaje int not null, 
-	CCA int not null 
+	CCA int not null ,
+	product_img text not null
 ); 
 
 drop table if exists ORDEN cascade; 
@@ -145,7 +146,7 @@ create table PEDIDO(
 
 drop table if exists ENTREGA cascade;  
 create table ENTREGA (
-	id_entrega int not null, 
+	id_entrega serial not null, 
 	id_estado int not null
 ); 
 

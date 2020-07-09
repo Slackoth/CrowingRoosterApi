@@ -8,6 +8,9 @@ var indexRouter = require('./routes/index');
 var sellerClientRouter = require('./routes/sellerClient');
 var sellerRouter = require('./routes/seller');
 var salePreviewRouter = require('./routes/salePreview')
+
+var productRouter= require('./routes/product')
+
 var saleDetailsRouter = require('./routes/saleDetails')
 var confirmSaleRouter = require('./routes/confirmSale')
 // var usersRouter = require('./routes/users');
@@ -28,8 +31,14 @@ app.use('/', indexRouter);
 app.use('/sellerclient',sellerClientRouter);
 app.use('/seller',sellerRouter);
 app.use('/salepreview',salePreviewRouter)
+app.use('/product', productRouter)
+
 app.use('/saledetails',saleDetailsRouter)
+<<<<<<< HEAD
 app.use('/confirmsale',confirmSaleRouter)
+=======
+
+>>>>>>> 0c61ee063a756638a2361fb375a5bd717df81b03
 // app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler
