@@ -13,6 +13,8 @@ var productRouter= require('./routes/product')
 
 var saleDetailsRouter = require('./routes/saleDetails')
 
+var deliveryPreviewRouter = require('./routes/deliveryPreview')
+
 // var usersRouter = require('./routes/users');
 
 var app = express();
@@ -34,6 +36,8 @@ app.use('/salepreview',salePreviewRouter)
 app.use('/product', productRouter)
 
 app.use('/saledetails',saleDetailsRouter)
+
+app.use('/deliverypreview', deliveryPreviewRouter)
 
 // app.use('/users', usersRouter);
 
