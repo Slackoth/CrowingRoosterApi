@@ -34,11 +34,7 @@ app.use('/salepreview',salePreviewRouter)
 app.use('/product', productRouter)
 
 app.use('/saledetails',saleDetailsRouter)
-<<<<<<< HEAD
 app.use('/confirmsale',confirmSaleRouter)
-=======
-
->>>>>>> 0c61ee063a756638a2361fb375a5bd717df81b03
 // app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler
