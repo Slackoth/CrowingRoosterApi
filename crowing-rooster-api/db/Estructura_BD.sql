@@ -146,7 +146,7 @@ create table PEDIDO(
 
 drop table if exists ENTREGA cascade;  
 create table ENTREGA (
-	id_entrega int not null, 
+	id_entrega serial not null, 
 	id_estado int not null
 ); 
 

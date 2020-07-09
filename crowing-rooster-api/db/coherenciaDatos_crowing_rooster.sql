@@ -340,8 +340,8 @@ begin
 
 		if prueba_venta.id_venta_exitosa is null then 
 			delete from venta_pendiente where id_venta_pendiente=new.id_venta;
-			insert into venta_exitosa values (new.id_venta, current_date, '12.12', 1); --el precio debe obtenerse de la app
-			raise notice 'se ha borrado de venta_pendiente la venta con el id: %, se ha insertado en venta_exitosa y se ha cambiado el estado en % a: %', new.id_venta, tg_relname, new.estado;
+			--insert into venta_exitosa values (new.id_venta, current_date, '12.12', 1); --el precio debe obtenerse de la app
+			raise notice 'se ha borrado de venta_pendiente la venta con el id: % y se ha cambiado el estado en % a: %', new.id_venta, tg_relname, new.estado;
 		end if;
 	elseif (tg_relname = 'orden' and new.estado='Exitosa') then
 
@@ -349,8 +349,8 @@ begin
 
 		if prueba_orden.id_oexitosa is null then
 			delete from orden_pendiente where id_opendiente=new.codigo_orden;
-			insert into orden_exitosa values (new.codigo_orden, current_date, (to_char(current_timestamp, 'hh12:mi:ss')), '12.12', 1); -- el precio debe obtenerse de la app o en su defecto de una tabla a la que se pueda acceder esa info.
-			raise notice 'se ha borrado de orden_pendiente la orden con el id: %, se ha insertado en orden_exitosa y se ha cambiado es estado en % a: %', new.codigo_orden, tg_relname, new.estado;
+			--insert into orden_exitosa values (new.codigo_orden, current_date, (to_char(current_timestamp, 'hh12:mi:ss')), '12.12', 1); -- el precio debe obtenerse de la app o en su defecto de una tabla a la que se pueda acceder esa info.
+			raise notice 'se ha borrado de orden_pendiente la orden con el id: % y se ha cambiado es estado en % a: %', new.codigo_orden, tg_relname, new.estado;
 		end if;
 	elseif (tg_relname = 'orden' and new.estado='Cancelada') then
 		select into prueba_orden * from orden_cancelada where id_ocancelada=new.codigo_orden;
