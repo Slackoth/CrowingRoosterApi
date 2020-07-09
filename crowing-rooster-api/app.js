@@ -11,7 +11,8 @@ var salePreviewRouter = require('./routes/salePreview')
 
 var productRouter= require('./routes/product')
 
-var saleDetailsRouter = require('./routes/saleDetails')
+var saleDetailsRouter = require('./routes/saleDetails');
+const { PreconditionFailed } = require('http-errors');
 
 // var usersRouter = require('./routes/users');
 
@@ -32,8 +33,8 @@ app.use('/sellerclient',sellerClientRouter);
 app.use('/seller',sellerRouter);
 app.use('/salepreview',salePreviewRouter)
 app.use('/product', productRouter)
-
 app.use('/saledetails',saleDetailsRouter)
+//app.use('/pedido', pedidoRouter)
 
 // app.use('/users', usersRouter);
 

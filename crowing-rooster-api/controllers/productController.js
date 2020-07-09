@@ -22,4 +22,16 @@ const getall= async(req, res)=>{
     })
 }
 
-module.exports = {getSpecific, getall}
+const getInfo= async(req, res)=>{
+    const codigo = req.query.codigo
+    const product = await db.connection.any(`select b.id_bateria,b.modelo , p.direccion , c.tipo from bateria b left join polaridad p on p.id_polaridad = b.polaridad  left join  calidad  c on c.id_calidad = b.calidad where b.modelo ='${codigo}'`)
+    .then(data => {
+        return res.status(200).json(data)
+    })
+    .catch(err => {
+        console.log(err)
+    })
+}
+
+
+module.exports = {getSpecific, getall, getInfo}
