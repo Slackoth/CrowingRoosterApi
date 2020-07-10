@@ -6,8 +6,7 @@ const getSuccessfulOrderDetails = async (req,res) => {
 
     await db.connection.any(`select c2.codigo,u2.nombre,
     v3.email,oe.fecha_entrega as fecha, oe.precio_total as precio,
-    mp.metodo,sum(p.cantidad_bateria) as total,t2.telefono,
-    c2.codigo as comprador_codigo, 
+    mp.metodo,sum(p.cantidad_bateria) as total,t2.telefono, 
     jsonb_agg(json_build_object(
         'estado', o.estado, 
         'cantidad',p.cantidad_bateria,

@@ -4,7 +4,7 @@ const getSuccessfulOrderPreview = async (req,res) => {
     const code = req.query.codigo
 
     await db.connection.any(`select o.codigo_orden, 
-    oe.fecha_entrega, sum(p.cantidad_bateria) as cantidad,
+    oe.fecha_entrega as fecha, sum(p.cantidad_bateria) as cantidad,
     o.estado 
     from orden o inner join orden_exitosa oe 
     on o.codigo_orden = oe.id_oexitosa inner join pedido p 
@@ -25,7 +25,7 @@ const getOngoingOrderPreview = async (req,res) => {
     const code = req.query.codigo
 
     await db.connection.any(`select o.codigo_orden,
-    op.fecha_pendiente, sum(p.cantidad_bateria) as cantidad,
+    op.fecha_pendiente as fecha, sum(p.cantidad_bateria) as cantidad,
     o.estado
     from orden o inner join orden_pendiente op 
     on o.codigo_orden = op.id_opendiente inner join pedido p 
