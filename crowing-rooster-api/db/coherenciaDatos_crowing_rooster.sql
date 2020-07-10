@@ -441,3 +441,38 @@ where v.vendedor_codigo = 'V-2020-0' and v.estado = 'Exitosa'
 group by v.id_venta,o.codigo_orden,u.nombre, ve.fecha_venta, u.img;
 
 */
+											     
+--CONFIRMAR VENTA
+create or replace function confirm_sale
+(codigo_venta varchar(100),precio numeric(100,2),metodo_pago integer,
+hora text,direccion text) 
+returns boolean
+as $$
+declare
+codigo_repartidor varchar(100);
+entrega_id integer;
+begin
+	
+	create temp table ultimo_repartidor on commit drop as 
+	select r.codigo, coalesce(count(e.id_entrega),0) as total 
+	from repartidor r left join repartidorxentrega r2 
+	on r2.codigo_repartidor = r.codigo left join entrega e 
+	on e.id_entrega  = r2.id_entrega
+	group by r.codigo 
+	order by total asc
+	limit 1;
+
+	select codigo into codigo_repartidor from ultimo_repartidor;
+	update venta set estado = 'Exitosa' where id_venta = codigo_venta;
+	insert into venta_exitosa values(codigo_venta,current_date,precio,metodo_pago);
+	insert into entrega values(default,1) returning id_entrega into entrega_id;
+	insert into repartidorxentrega values(codigo_repartidor,entrega_id);
+	insert into venta_exitosaxentrega values(codigo_venta,entrega_id,direccion,hora);
+	
+	return true;
+
+end;
+$$ language plpgsql;
+/*Ejemplo: select * from confirm_sale('VT-2020-0',156.99,1,'14:20','68 Newbridge Street
+Danvers, MA 01923'); */
+											    
