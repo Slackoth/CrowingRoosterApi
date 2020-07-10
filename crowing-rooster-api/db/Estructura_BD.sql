@@ -245,7 +245,7 @@ alter table ORDEN_CANCELADA add constraint pk_orden_cancelada primary key(id_Oca
 alter table ORDEN_CANCELADA add constraint fk_orden_cancelada foreign key (id_Ocancelada) references ORDEN(codigo_orden) on delete cascade on update cascade deferrable; 
 
 ---ORDEN PENDIENTE
-alter table 	_PENDIENTE add constraint pk_orden_pendiente primary key(id_Opendiente); 
+alter table ORDEN_PENDIENTE add constraint pk_orden_pendiente primary key(id_Opendiente); 
 alter table ORDEN_PENDIENTE add constraint fk_orden_pendiente foreign key (id_Opendiente) references ORDEN(codigo_orden) on delete cascade on update cascade deferrable; 
 
 ---PEDIDO
