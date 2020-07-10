@@ -22,7 +22,8 @@ create table USUARIO(
 
 drop table if exists REPARTIDOR cascade ; 
 create table REPARTIDOR(
-	codigo varchar(100) not null
+	codigo varchar(100) not null,
+	email correo not null
 );
 
 drop table if exists COMPRADOR cascade; 

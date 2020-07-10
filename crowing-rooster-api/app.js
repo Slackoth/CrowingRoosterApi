@@ -10,6 +10,7 @@ var sellerRouter = require('./routes/seller');
 var salePreviewRouter = require('./routes/salePreview')
 var loginRouter =  require('./routes/login')
 var orderPreviewRouter =  require('./routes/orderPreview')
+var orderDetailsRouter = require('./routes/orderDetails')
 
 var productRouter= require('./routes/product')
 
@@ -39,6 +40,7 @@ app.use('/seller',sellerRouter);
 app.use('/salepreview',salePreviewRouter)
 app.use('/product', productRouter)
 app.use('/orderpreview',orderPreviewRouter)
+app.use('/orderdetails',orderDetailsRouter)
 
 app.use('/saledetails',saleDetailsRouter)
 app.use('/createorder', createOrder)
