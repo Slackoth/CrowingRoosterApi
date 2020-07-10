@@ -18,7 +18,7 @@ const { PreconditionFailed } = require('http-errors');
 
 var saleDetailsRouter = require('./routes/saleDetails')
 var confirmSaleRouter = require('./routes/confirmSale')
-//var createOrder=require('./routes/OrderCreate')
+var createOrder=require('./routes/OrderCreate')
 // var usersRouter = require('./routes/users');
 
 var app = express();
@@ -41,7 +41,7 @@ app.use('/product', productRouter)
 app.use('/orderpreview',orderPreviewRouter)
 
 app.use('/saledetails',saleDetailsRouter)
-//app.use('/createorder', createOrder)
+app.use('/createorder', createOrder)
 //app.use('/pedido', pedidoRouter)
 
 app.use('/confirmsale',confirmSaleRouter)

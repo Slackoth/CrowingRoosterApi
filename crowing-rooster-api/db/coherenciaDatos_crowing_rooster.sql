@@ -396,15 +396,6 @@ insert into venta_pendiente values(generar_nuevo_codigo('VT'),'2020-07-06');
 insert into venta values(generar_nuevo_codigo('VT'),'Pendiente','V-2020-0');
 commit;
 
-begin;
-set constraints fk_comprador_codigo deferred;
-set constraints fk_vendedor_codigo deferred;
-set constraints fk_orden_pendiente deferred;
-
-insert into orden_pendiente values (generar_nuevo_codigo('O'), current_date);
-insert into orden values(generar_nuevo_codigo('O'), 'Pendiente');
-commit;
-
 insert into VENTAxORDEN values('VT-2020-0','O-2020-0');
 insert into VENTAxORDEN values('VT-2020-1','O-2020-1');
 insert into VENTAxORDEN values('VT-2020-2','O-2020-2');

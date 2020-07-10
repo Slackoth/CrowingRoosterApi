@@ -18,7 +18,7 @@ const confirmSale = async (req,res) => {
         return res.status(200).send(data)
     })
     .catch(err => {
-        console.log(err)
+        
     })
     
 }
