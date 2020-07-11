@@ -22,6 +22,7 @@ var saleDetailsRouter = require('./routes/saleDetails')
 var confirmSaleRouter = require('./routes/confirmSale')
 //var createOrder=require('./routes/OrderCreate')
 // var usersRouter = require('./routes/users');
+var catalogueRouter = require('./routes/catalogue')
 
 var app = express();
 
@@ -51,6 +52,7 @@ app.use('/deliverypreview', deliveryPreviewRouter)
 app.use('/confirmsale',confirmSaleRouter)
 app.use('/users',loginRouter)
 // app.use('/users', usersRouter);
+app.use('/catalogue', catalogueRouter)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
