@@ -1,20 +1,22 @@
 var db = require('../db/connection')
 const e = require('express')
 
-const postOrder = async (req,res) => {
+const CreateOrder = async (req,res) => {
     //const email = req.query.email
 
-    const add = await db.connection.any(`
-    begin;
-    set constraints fk_comprador_codigo deferred;
-    set constraints fk_vendedor_codigo deferred;
-    set constraints fk_orden_pendiente deferred;
-    
-    insert into orden_pendiente values (generar_nuevo_codigo('O'), current_date);
-    insert into orden values(generar_nuevo_codigo('O'), 'Pendiente');
-    commit;
-    `)
+    const orden = await db.connection.any(
+     `
+     begin;
+     set constraints fk_orden_pendiente deferred;
+     
+     
+     insert into orden_pendiente values (generar_nuevo_codigo('O'),CURRENT_DATE);
+     insert into orden values(generar_nuevo_codigo('O'),'Pendiente') returning  orden.codigo_orden as codigo;
+     commit;
+
+     `)
     .then(data =>{
+        console.log(data)
         return res.status(200).send(data)
     })
     .catch(err=>{
@@ -22,4 +24,12 @@ const postOrder = async (req,res) => {
     })
 }
 
-module.exports = {postOrder}
+const getCode= async (req, res)=>{
+    const code = await db.connection.any(`
+    select o.codigo_orden from orden o 
+    order by o.codigo_orden desc
+    limit 1
+    `)
+}
+
+module.exports = {getCode, CreateOrder}
