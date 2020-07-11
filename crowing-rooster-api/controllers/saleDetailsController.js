@@ -4,8 +4,8 @@ const getSuccessfulSaleDetails = async (req,res) => {
     const codigo = req.query.codigo
     const orderId = req.query.ordenId
 
-    const seller = await db.connection.any(`select v.vendedor_codigo,
-    u.nombre,c.email,e.nombre_empresa,ve.precio,mp.metodo,ve.fecha_venta as fecha,
+    const seller = await db.connection.any(`select v.vendedor_codigo,u.nombre,
+    c.email,e.nombre_empresa,ve.precio,mp.metodo,ve.fecha_venta as fecha,
     sum(p.cantidad_bateria ) as cantidad_total,
     jsonb_agg(json_build_object(
         'estado', v.estado , 
@@ -18,8 +18,8 @@ const getSuccessfulSaleDetails = async (req,res) => {
         'id_pedido',p.numero_pedido 
     )) as pedidos
     from venta v inner join ventaxorden v2
-    on v.id_venta = v2.id_venta inner join orden o 
-    on o.codigo_orden = v2.codigo_orden inner join pedido p 
+    on v.id_venta = v2.id_venta_ventaxorden inner join orden o 
+    on o.codigo_orden = v2.id_orden_ventaxorden inner join pedido p 
     on p.codigo_orden = o.codigo_orden inner join usuario u 
     on p.comprador_codigo = u.id inner join comprador c 
     on c.codigo = p.comprador_codigo inner join empresa e 
@@ -30,9 +30,7 @@ const getSuccessfulSaleDetails = async (req,res) => {
     on c2.id_calidad = b.calidad inner join polaridad p2 
     on p2.id_polaridad = b.polaridad
     where v.vendedor_codigo = '${codigo}' and o.codigo_orden = '${orderId}'
-    group by v.vendedor_codigo,u.nombre,c.email,e.nombre_empresa,
-    ve.precio,mp.metodo,ve.fecha_venta;
-    `)
+    group by v.vendedor_codigo,u.nombre,c.email,e.nombre_empresa,ve.precio,mp.metodo,ve.fecha_venta;`)
     .then(data => {
         return res.status(200).json(data)
     })
@@ -60,8 +58,8 @@ const getOngoingSaleDetails = async (req,res) => {
         'id_pedido',p.numero_pedido
     )) as pedidos
     from venta v inner join ventaxorden v2
-    on v.id_venta = v2.id_venta inner join orden o 
-    on o.codigo_orden = v2.codigo_orden inner join pedido p 
+    on v.id_venta = v2.id_venta_ventaxorden inner join orden o 
+    on o.codigo_orden = v2.id_orden_ventaxorden inner join pedido p 
     on p.codigo_orden = o.codigo_orden inner join usuario u 
     on p.comprador_codigo = u.id inner join comprador c 
     on c.codigo = p.comprador_codigo inner join empresa e 

@@ -10,6 +10,7 @@ var sellerRouter = require('./routes/seller');
 var salePreviewRouter = require('./routes/salePreview')
 var loginRouter =  require('./routes/login')
 var orderPreviewRouter =  require('./routes/orderPreview')
+var orderDetailsRouter = require('./routes/orderDetails')
 
 var productRouter= require('./routes/product')
 
@@ -20,7 +21,7 @@ var deliveryPreviewRouter = require('./routes/deliveryPreview')
 
 var saleDetailsRouter = require('./routes/saleDetails')
 var confirmSaleRouter = require('./routes/confirmSale')
-//var createOrder=require('./routes/OrderCreate')
+var createOrder=require('./routes/OrderCreate')
 // var usersRouter = require('./routes/users');
 var catalogueRouter = require('./routes/catalogue')
 
@@ -42,9 +43,10 @@ app.use('/seller',sellerRouter);
 app.use('/salepreview',salePreviewRouter)
 app.use('/product', productRouter)
 app.use('/orderpreview',orderPreviewRouter)
+app.use('/orderdetails',orderDetailsRouter)
 
 app.use('/saledetails',saleDetailsRouter)
-//app.use('/createorder', createOrder)
+app.use('/createorder', createOrder)
 //app.use('/pedido', pedidoRouter)
 
 app.use('/deliverypreview', deliveryPreviewRouter)
