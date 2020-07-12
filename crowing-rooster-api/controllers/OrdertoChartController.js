@@ -26,10 +26,17 @@ const CreateOrder = async (req,res) => {
 
 const getCode= async (req, res)=>{
     const code = await db.connection.any(`
-    select o.codigo_orden from orden o 
+    select o.codigo_orden as codigoOrden, o.estado from orden o 
     order by o.codigo_orden desc
     limit 1
     `)
+    .then(data =>{
+        console.log(data)
+        return res.status(200).send(data)
+    })
+    .catch(err=>{
+        console.log(err)
+    })
 }
 
 module.exports = {getCode, CreateOrder}

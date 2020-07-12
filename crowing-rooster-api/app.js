@@ -20,6 +20,7 @@ const { PreconditionFailed } = require('http-errors');
 var saleDetailsRouter = require('./routes/saleDetails')
 var confirmSaleRouter = require('./routes/confirmSale')
 var createOrder=require('./routes/OrderCreate')
+var createPedido= require('./routes/createPedido')
 // var usersRouter = require('./routes/users');
 
 var app = express();
@@ -48,6 +49,7 @@ app.use('/createorder', createOrder)
 
 app.use('/confirmsale',confirmSaleRouter)
 app.use('/users',loginRouter)
+app.use('/createpedido', createPedido)
 // app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler
