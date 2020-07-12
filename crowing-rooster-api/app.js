@@ -17,11 +17,14 @@ var productRouter= require('./routes/product')
 var saleDetailsRouter = require('./routes/saleDetails');
 const { PreconditionFailed } = require('http-errors');
 
+var deliveryPreviewRouter = require('./routes/deliveryPreview')
+
 var saleDetailsRouter = require('./routes/saleDetails')
 var confirmSaleRouter = require('./routes/confirmSale')
 var createOrder=require('./routes/OrderCreate')
 var createPedido= require('./routes/createPedido')
 // var usersRouter = require('./routes/users');
+var catalogueRouter = require('./routes/catalogue')
 
 var app = express();
 
@@ -47,10 +50,13 @@ app.use('/saledetails',saleDetailsRouter)
 app.use('/createorder', createOrder)
 //app.use('/pedido', pedidoRouter)
 
+app.use('/deliverypreview', deliveryPreviewRouter)
+
 app.use('/confirmsale',confirmSaleRouter)
 app.use('/users',loginRouter)
 app.use('/createpedido', createPedido)
 // app.use('/users', usersRouter);
+app.use('/catalogue', catalogueRouter)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

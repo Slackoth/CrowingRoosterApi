@@ -466,4 +466,34 @@ end;
 $$ language plpgsql;
 /*Ejemplo: select * from confirm_sale('VT-2020-0',156.99,1,'14:20','68 Newbridge Street
 Danvers, MA 01923'); */
+
+create or replace function insertar_comprador
+(dui varchar(10),email text,empresa text,
+usuario text,nombre text,clave text,img text,
+telefono varchar(10)) 
+returns boolean
+as $$
+declare
+codigo_orden varchar(100);
+id_empresa integer;
+codigo_comprador varchar(100);
+begin
+	set constraints fk_comprador deferred;
+
+	select e.id_empresa into id_empresa from empresa e
+	where e.nombre_empresa = empresa;
+	
+	insert into comprador values(generar_nuevo_codigo('C'),dui,email,id_empresa) returning codigo
+	into codigo_comprador;
+	insert into usuario values(generar_nuevo_codigo('C'),usuario,nombre,
+	clave,'Comprador',img);
+	insert into telefono values(default,telefono,codigo_comprador,null,null);
+	
+	return true;
+
+end;
+$$ language plpgsql;
+/*select * from insertar_comprador('3216549870','rupa@gmail.com','Jellybutter','jellyUser',
+'Rupa trupa','123456','feliz','9999-1010');*/
+											     
 											    
