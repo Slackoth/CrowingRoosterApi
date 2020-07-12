@@ -1,9 +1,9 @@
-\c template1
+--\c template1
 
 drop database if exists crowing_rooster; 
 create database crowing_rooster; 
 
-\c crowing_rooster
+--\c crowing_rooster
 
 drop DOMAIN if exists correo cascade;
 --create DOMAIN correo as varchar(200) check (value ~ '^\d{8}@(.com)|[a-z]+@(.com)$');

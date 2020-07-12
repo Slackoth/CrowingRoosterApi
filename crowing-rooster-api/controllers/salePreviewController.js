@@ -3,6 +3,7 @@ var db = require('../db/connection')
 const getSuccessfulSalePreview = async (req,res) => {
     const codigo = req.query.codigo
 
+
     await db.connection.any(`select v.id_venta,u.nombre,ve.fecha_venta as fecha,sum(p.cantidad_bateria) as total,
     u.img,o.codigo_orden,v.estado from venta v inner join ventaxorden v2 
     on v.id_venta = v2.id_venta_ventaxorden inner join orden o 
