@@ -1,9 +1,9 @@
 var db = require('../db/connection')
 
-const confirmSale = async (req,res) => {
+const confirmPedido = async (req,res) => {
     const body = req.body
-    const saleId = req.query.ventaId
-    var payment
+    console.log(body)
+   
 
     if(req.body.payment == 'Efectivo') {
         payment = 1
@@ -12,8 +12,7 @@ const confirmSale = async (req,res) => {
         payment = 2
     }
 
-    await db.connection.any(`select * from confirm_sale('${saleId}',${body.price},
-    ${payment},'${body.hour}','${body.address}')`)
+    await db.connection.any(`insert into pedido values ( Default,'${body.comprador}', ${body.cantidad}, '${body.orden}', ${body.bateria});`)
     .then(data => {
         return res.status(200).send(data)
     })
@@ -23,4 +22,4 @@ const confirmSale = async (req,res) => {
     
 }
 
-module.exports = {confirmSale}
+module.exports = {confirmPedido}

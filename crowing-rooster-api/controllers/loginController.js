@@ -19,10 +19,16 @@ const getUser = async (req,res) => {
         })
 }
 
+<<<<<<< HEAD
 const getDeliveryMan = async(req,res) => {
     await db.connection.any(`select r.codigo, r.email, u.tipo, u.img from repartidor r inner join usuario u
         on u.id = r.codigo;`)
     .then(data =>{
+=======
+const getCompanies = async (req,res) => {
+    await db.connection.any(`select nombre_empresa from empresa e`)
+    .then(data => {
+>>>>>>> c26478cf3e96021ed0667181b7a47d8d4f8384f7
         return res.status(200).json(data)
     })
     .catch(err => {
@@ -30,4 +36,8 @@ const getDeliveryMan = async(req,res) => {
     })
 }
 
+<<<<<<< HEAD
 module.exports = {getUser, getDeliveryMan}
+=======
+module.exports = {getUser,getCompanies}
+>>>>>>> c26478cf3e96021ed0667181b7a47d8d4f8384f7

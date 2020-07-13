@@ -3,7 +3,8 @@ var router = express.Router()
 var controller = require('../controllers/OrdertoChartController')
 
 
-router.post('/',controller.postOrder)
+router.post('/',controller.CreateOrder)
+router.get('/code', controller.getCode)
 
 
 module.exports = router
