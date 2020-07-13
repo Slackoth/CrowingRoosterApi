@@ -24,6 +24,7 @@ var confirmSaleRouter = require('./routes/confirmSale')
 var createOrder=require('./routes/OrderCreate')
 // var usersRouter = require('./routes/users');
 var catalogueRouter = require('./routes/catalogue')
+var deliveryDetailsRouter = require('./routes/deliveryDetails')
 
 var app = express();
 
@@ -50,6 +51,7 @@ app.use('/createorder', createOrder)
 //app.use('/pedido', pedidoRouter)
 
 app.use('/deliverypreview', deliveryPreviewRouter)
+app.use('/deliverydetails', deliveryDetailsRouter)
 
 app.use('/confirmsale',confirmSaleRouter)
 app.use('/users',loginRouter)

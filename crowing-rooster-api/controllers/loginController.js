@@ -19,4 +19,15 @@ const getUser = async (req,res) => {
         })
 }
 
-module.exports = {getUser}
+const getDeliveryMan = async(req,res) => {
+    await db.connection.any(`select r.codigo, r.email, u.tipo, u.img from repartidor r inner join usuario u
+        on u.id = r.codigo;`)
+    .then(data =>{
+        return res.status(200).json(data)
+    })
+    .catch(err => {
+        console.log(err)
+    })
+}
+
+module.exports = {getUser, getDeliveryMan}
