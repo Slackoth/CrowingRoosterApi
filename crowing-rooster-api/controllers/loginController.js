@@ -19,4 +19,14 @@ const getUser = async (req,res) => {
         })
 }
 
-module.exports = {getUser}
+const getCompanies = async (req,res) => {
+    await db.connection.any(`select nombre_empresa from empresa e`)
+    .then(data => {
+        return res.status(200).json(data)
+    })
+    .catch(err => {
+        console.log(err)
+    })
+}
+
+module.exports = {getUser,getCompanies}
