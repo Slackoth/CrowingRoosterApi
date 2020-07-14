@@ -28,7 +28,7 @@ const getSuccessfulDeliveryPreview = async (req,res) => {
 const getOngoingDeliveryPreview = async (req, res) => {
     const codigo = req.query.codigo
 
-    await db.connection.any(`select e.id_entrega, vtee.direccion_entrega, ee.estado, vte.precio, mp.metodo, b.product_img
+    await db.connection.any(`select e.id_entrega, vtee.direccion_entrega, ee.estado, vte.precio, mp.metodo, b.product_img, rxe.codigo_repartidor
     from repartidorxentrega rxe inner join entrega e
     on rxe.id_entrega = e.id_entrega inner join estado_entrega ee
     on e.id_estado = ee.id_estado inner join venta_exitosaxentrega vtee
@@ -41,7 +41,7 @@ const getOngoingDeliveryPreview = async (req, res) => {
     on o.codigo_orden = pd.codigo_orden inner join bateria b
     on pd.id_bateria = b.id_bateria
     where rxe.codigo_repartidor = '${codigo}' and ee.estado = 'Pendiente'
-    group by e.id_entrega, vtee.direccion_entrega, ee.estado, vte.precio, mp.metodo, b.product_img;`)
+    group by e.id_entrega, vtee.direccion_entrega, ee.estado, vte.precio, mp.metodo, b.product_img, rxe.codigo_repartidor;`)
     .then(data => {
         res.status(200).json(data)
     })
