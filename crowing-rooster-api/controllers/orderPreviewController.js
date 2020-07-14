@@ -25,6 +25,9 @@ const getSuccessfulOrderPreview = async (req,res) => {
 const getOngoingOrderPreview = async (req,res) => {
     const code = req.query.codigo
 
+    console.log(code);
+    
+
     await db.connection.any(`select o.codigo_orden, 
     oe.fecha_entrega as fecha, sum(p.cantidad_bateria) as cantidad,
     o.estado, c2.codigo as comprador, b2.product_img as img
