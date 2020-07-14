@@ -32,7 +32,7 @@ create table COMPRADOR(
 	dui varchar(10) not null, 
 	email correo not null, 
 	id_empresa int
-); npm start
+); 
 
 drop table if exists VENDEDOR cascade; 
 create table VENDEDOR(
